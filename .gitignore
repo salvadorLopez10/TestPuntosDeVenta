@@ -1,0 +1,87 @@
+# ======================================
+# Global ignores
+# ======================================
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.sw?
+
+# Environment variables
+.env*
+!.env.example
+
+# ======================================
+# Frontend (React + Vite)
+# ======================================
+
+# Vite build output
+frontend/dist/
+
+# Node modules
+frontend/node_modules/
+
+# Vite cache
+frontend/.vite/
+
+# Yarn
+frontend/.yarn/
+frontend/.pnp.*
+frontend/.parcel-cache/
+
+# Testing
+frontend/coverage/
+frontend/jest-coverage/
+
+# Lint cache
+frontend/.eslintcache
+
+# ======================================
+# Backend (.NET)
+# ======================================
+
+# Build artifacts
+backend/**/bin/
+backend/**/obj/
+backend/.vs/
+
+# User-specific files
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.userosscache
+backend/**/*.sln.docstates
+
+# Dotnet watch & secret files
+backend/.aspnet/https/
+
+# Backup & temp
+backend/**/~$*
+
+# Rider IDE
+backend/.idea/
+
+# ======================================
+# Database scripts
+# ======================================
+
+# Ignore generated or temporary DB files (if any)
+database/*.bak
+database/*.mdf
+database/*.ldf

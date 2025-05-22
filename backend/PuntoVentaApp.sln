@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuntoVentaAPI", "PuntoVentaAPI\PuntoVentaAPI.csproj", "{10A33302-C051-4E6F-8AED-DF47145B5C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuntoVenta.Domain", "PuntoVenta.Domain\PuntoVenta.Domain.csproj", "{6BDB6034-3556-4ECD-A84D-131E672B28B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuntoVenta.Infrastructure", "PuntoVenta.Infrastructure\PuntoVenta.Infrastructure.csproj", "{E73F8374-17BD-48B0-8435-A2A12C735D66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuntoVenta.Application", "PuntoVenta.Application\PuntoVenta.Application.csproj", "{F3220558-9FDA-4C38-A14F-F10DB5ABDE9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10A33302-C051-4E6F-8AED-DF47145B5C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10A33302-C051-4E6F-8AED-DF47145B5C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10A33302-C051-4E6F-8AED-DF47145B5C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10A33302-C051-4E6F-8AED-DF47145B5C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BDB6034-3556-4ECD-A84D-131E672B28B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BDB6034-3556-4ECD-A84D-131E672B28B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BDB6034-3556-4ECD-A84D-131E672B28B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BDB6034-3556-4ECD-A84D-131E672B28B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73F8374-17BD-48B0-8435-A2A12C735D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73F8374-17BD-48B0-8435-A2A12C735D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73F8374-17BD-48B0-8435-A2A12C735D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73F8374-17BD-48B0-8435-A2A12C735D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3220558-9FDA-4C38-A14F-F10DB5ABDE9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3220558-9FDA-4C38-A14F-F10DB5ABDE9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3220558-9FDA-4C38-A14F-F10DB5ABDE9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3220558-9FDA-4C38-A14F-F10DB5ABDE9F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
