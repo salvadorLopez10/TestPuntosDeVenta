@@ -76,7 +76,7 @@ public class PuntosVentaController : ControllerBase
         }
 
         await _context.SaveChangesAsync();
-        return NoContent();
+        return Ok(punto);
     }
 
 
