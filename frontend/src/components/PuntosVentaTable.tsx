@@ -56,7 +56,7 @@ const PuntosVentaTable = ( { puntos, onEditar, onEliminar, onCrearNuevo }: Props
               <tr key={punto.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-4 py-2">{punto.descripcion}</td>
                 <td className="px-4 py-2">{punto.zona}</td>
-                <td className="px-4 py-2">{punto.venta}</td>
+                <td className="px-4 py-2">{punto.venta.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
                 <td className="px-4 py-2 flex gap-2 justify-center">
                   <button
                     onClick={() => onEditar(punto)}
