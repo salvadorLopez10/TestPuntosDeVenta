@@ -1,34 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PuntosVentaTable from '../components/PuntosVentaTable';
 import ModalPuntoVenta from '../components/ModalPuntoVenta';
 import type { PuntoVenta } from '../types/puntoVenta';
+import { getPuntosVenta, createPuntoVenta, updatePuntoVenta, deletePuntoVenta } from '../api/puntosVenta';
 
 
 const PuntosVentaContainer = () => {
 
-    const [puntos, setPuntos] = useState<PuntoVenta[]>([
-    {
-        id: 1,
-        descripcion: 'Sucursal Centro',
-        zona: 'Centro',
-        venta: 2300,
-        latitud: 19.4326,
-        longitud: -99.1332,
-    },
-    {
-        id: 2,
-        descripcion: 'Sucursal Norte',
-        zona: 'Norte',
-        venta: 1800,
-        latitud: 19.5000,
-        longitud: -99.1500,
-    },
-    ]);
+    const [puntos, setPuntos] = useState<PuntoVenta[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [loadingOperation, setLoadingOperation] = useState<boolean>(false);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [puntoSeleccionado, setPuntoSeleccionado] = useState<PuntoVenta | null>(null);
     const [confirmDialogVisible, setConfirmDialogVisible] = useState(false);
     const [puntoAEliminar, setPuntoAEliminar] = useState<PuntoVenta | null>(null);
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+            try {
+                const response = await getPuntosVenta();
+                setPuntos(response.data);
+            } catch (error) {
+                console.error('Error al obtener puntos de venta:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return <p className="text-center">Cargando puntos de venta...</p>;
+    }
 
     const handleCrearNuevo = () => {
         setPuntoSeleccionado(null);
@@ -46,24 +52,41 @@ const PuntosVentaContainer = () => {
         //setPuntos(prev => prev.filter(p => p.id !== id));
     };
 
-    const handleGuardar = (nuevoPunto: PuntoVenta) => {
-        setPuntos(prev => {
-        const existe = prev.find(p => p.id === nuevoPunto.id);
-        if (existe) {
-            return prev.map(p => (p.id === nuevoPunto.id ? nuevoPunto : p));
-        } else {
-            return [...prev, { ...nuevoPunto, id: Date.now() }];
+    const handleGuardar = async (nuevoPunto: PuntoVenta) => {
+        try {
+            if (nuevoPunto.id && puntos.some(p => p.id === nuevoPunto.id)) {
+                // Actualizar
+                setLoadingOperation(true);
+                const response = await updatePuntoVenta(nuevoPunto.id, nuevoPunto);
+                setLoadingOperation(false);
+                setPuntos(prev => prev.map(p => (p.id === nuevoPunto.id ? response.data : p)));
+            } else {
+                // Crear nuevo
+                setLoadingOperation(true);
+                const response = await createPuntoVenta(nuevoPunto);
+                setLoadingOperation(false);
+                setPuntos(prev => [...prev, response.data]);
+            }
+            setModalVisible(false);
+        } catch (error) {
+            console.error('Error al guardar el punto de venta:', error);
         }
-        });
-        setModalVisible(false);
     };
 
-    const confirmarEliminacion = () => {
-        if (puntoAEliminar) {
+    const confirmarEliminacion = async() => {
+        if (!puntoAEliminar) return;
+
+        try {
+            setLoadingOperation(true);
+            await deletePuntoVenta(puntoAEliminar.id);
             setPuntos(prev => prev.filter(p => p.id !== puntoAEliminar.id));
+        } catch (error) {
+            console.error('Error al eliminar punto de venta:', error);
+        } finally {
+            setLoadingOperation(false);
+            setConfirmDialogVisible(false);
+            setPuntoAEliminar(null);
         }
-        setConfirmDialogVisible(false);
-        setPuntoAEliminar(null);
     };
 
     const cancelarEliminacion = () => {
@@ -87,6 +110,7 @@ const PuntosVentaContainer = () => {
                 onClose={() => setModalVisible(false)}
                 onSave={handleGuardar}
                 punto={puntoSeleccionado}
+                loading={loadingOperation}
             />
         
             {confirmDialogVisible && (
@@ -105,9 +129,11 @@ const PuntosVentaContainer = () => {
                             </button>
                             <button
                                 onClick={confirmarEliminacion}
-                                className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white"
-                            >
-                            Eliminar
+                                className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white items-center flex gap-2"
+                                disabled={loadingOperation}
+                            >      
+                                Eliminar
+                            {loadingOperation && <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>}
                             </button>
                         </div>
                     </div>

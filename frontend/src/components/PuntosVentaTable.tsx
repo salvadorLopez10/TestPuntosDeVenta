@@ -11,11 +11,11 @@ type Props = {
 const PuntosVentaTable = ( { puntos, onEditar, onEliminar, onCrearNuevo }: Props ) => {
 
   const [busqueda, setBusqueda] = useState('');
-
+  // Filtrar puntos de venta por descripción o zona
   const puntosFiltrados = puntos.filter((p) =>
-    p.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.zona.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  (p.descripcion?.toLowerCase().includes(busqueda.toLowerCase()) || 
+   p.zona?.toLowerCase().includes(busqueda.toLowerCase()))
+);
 
   return (
     <div className="space-y-4">

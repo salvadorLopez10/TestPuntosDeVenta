@@ -8,9 +8,10 @@ interface ModalPuntoVentaProps {
   onClose: () => void;
   onSave: (punto: PuntoVenta) => void;
   punto: PuntoVenta | null;
+  loading?: boolean;
 }
 
-const ModalPuntoVenta: React.FC<ModalPuntoVentaProps> = ({ visible, onClose, onSave, punto }) => {
+const ModalPuntoVenta: React.FC<ModalPuntoVentaProps> = ({ visible, onClose, onSave, punto, loading }) => {
   const { register, handleSubmit, reset } = useForm<PuntoVenta>({
     defaultValues: punto ?? {
       id: 0,
@@ -41,7 +42,7 @@ const ModalPuntoVenta: React.FC<ModalPuntoVentaProps> = ({ visible, onClose, onS
     if (punto) {
       onSave({ ...data, id: punto.id });
     } else {
-      onSave({ ...data, id: Date.now() }); // ID generado temporalmente
+      onSave({ ...data });
     }
   };
 
@@ -119,9 +120,11 @@ const ModalPuntoVenta: React.FC<ModalPuntoVentaProps> = ({ visible, onClose, onS
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#DF2E20] text-white rounded hover:bg-[#af2e24]"
+                disabled={loading}
+                className="px-4 py-2 bg-[#DF2E20] text-white rounded hover:bg-[#af2e24] items-center flex gap-2"
               >
                 Guardar
+                { loading && <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div> }
               </button>
             </div>
           </form>
