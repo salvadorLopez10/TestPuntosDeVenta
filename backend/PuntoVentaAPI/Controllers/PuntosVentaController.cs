@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using PuntoVenta.Domain.Entities;
 using PuntoVenta.Infrastructure.Persistence;
 
@@ -45,6 +46,39 @@ public class PuntosVentaController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> Patch(int id, JsonElement data)
+    {
+        var punto = await _context.PuntosVenta.FindAsync(id);
+        if (punto == null) return NotFound();
+
+        foreach (var prop in data.EnumerateObject())
+        {
+            switch (prop.Name.ToLower())
+            {
+                case "latitud":
+                    punto.Latitud = prop.Value.GetDouble();
+                    break;
+                case "longitud":
+                    punto.Longitud = prop.Value.GetDouble();
+                    break;
+                case "descripcion":
+                    punto.Descripcion = prop.Value.GetString();
+                    break;
+                case "venta":
+                    punto.Venta = prop.Value.GetDecimal();
+                    break;
+                case "zona":
+                    punto.Zona = prop.Value.GetString();
+                    break;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
