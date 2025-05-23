@@ -1,30 +1,88 @@
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import type { LatLngExpression } from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import type { LatLngBoundsExpression } from 'leaflet';
 import type { PuntoVenta } from '../types/puntoVenta';
+import { useEffect, useState } from 'react';
+import { getPuntosVenta } from '../api/puntosVenta';
 
-const puntos: PuntoVenta[] = [
-  { id: 1, latitud: 19.43, longitud: -99.13, descripcion: "Sucursal A", venta: 10000, zona: "Norte" },
-  { id: 2, latitud: 19.45, longitud: -99.14, descripcion: "Sucursal B", venta: 15000, zona: "Sur" },
-  // más datos...
-];
+const COLORS = ['#df2e20', '#006ba1', '#f97352', '#2a2a2a', '#374e79', '#2f4858'];
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658'];
+const AjustarVistaMapa = ({ puntos }: { puntos: PuntoVenta[] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (puntos.length > 0) {
+      const bounds: LatLngBoundsExpression = puntos.map(p => [p.latitud, p.longitud]);
+      map.fitBounds(bounds);
+    }
+  }, [puntos, map]);
+
+  return null;
+}
+
+const FixMapResize = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+  }, [map]);
+
+  return null;
+};
+
 
 const MapWithChart = () => {
+  const [puntos, setPuntos] = useState<PuntoVenta[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const data = [
-    { name: 'Norte', value: 10000 },
-    { name: 'Sur', value: 15000 },
-  ];
+  useEffect (() => {
+    const fetchPuntos = async () => {
+        try {
+            setLoading(true);
+            const response = await getPuntosVenta();
+            setPuntos(response.data);
+        } catch (error) {
+            console.error('Error al obtener puntos de venta:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
- const center: LatLngExpression = [19.43, -99.13];
+    fetchPuntos();
+  }, []);
+
+  // Agrupar por zona y sumar ventas
+  const data = Object.values(
+    puntos.reduce((acc, punto) => {
+      if (!acc[punto.zona]) {
+        acc[punto.zona] = { name: punto.zona, value: 0 };
+      }
+      acc[punto.zona].value += punto.venta;
+      return acc;
+    }, {} as Record<string, { name: string; value: number }>)
+  );
+
+  const totalVentas = data.reduce((sum, item) => sum + item.value, 0);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[500px]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600">Cargando puntos de venta...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       <div className="h-[300px] lg:h-[500px] lg:flex-1 rounded overflow-hidden shadow">
         <MapContainer 
-          center={center}
+          center={[19.43, -99.13]}
           zoom={12}
           scrollWheelZoom
           style={{ height: '100%', width: '100%' }}
@@ -32,32 +90,63 @@ const MapWithChart = () => {
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {puntos.map(p => (
+          {puntos.map((p) => (
             <Marker key={p.id} position={[p.latitud, p.longitud]}>
-              <Popup>{p.descripcion} - ${p.venta}</Popup>
+              <Popup>
+                <strong>{p.descripcion}</strong><br />
+                Venta: {p.venta.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}<br />
+                Zona: {p.zona}
+              </Popup>
             </Marker>
           ))}
+          <AjustarVistaMapa puntos={puntos} />
+          <FixMapResize />
         </MapContainer>
       </div>
 
-      <div className="lg:w-[400px] flex justify-center items-center">
-        <PieChart width={300} height={300}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            label
-          >
-            {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
+      <div className="lg:w-[400px] flex flex-col items-center justify-center">
+        <h2 className="text-lg font-semibold mb-4 text-center">
+          Total: {totalVentas.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
+        </h2>
+
+        {
+          data.length === 0 ? (
+                <p className="text-gray-500 text-center">No hay datos disponibles para graficar.</p>
+          ): (
+            <>
+              <div className="text-center mb-4">
+                <p className="text-sm text-gray-600">Distribución de Ventas por Zona</p>
+              </div>
+              
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, value }) =>
+                    `${name}: ${value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`
+                  }
+                >
+                  {data.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number) =>
+                    value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                  }
+                />
+                <Legend />
+                </PieChart>
+            </>
+          )
+        }
+
+       
+        
       </div>
     </div>
   );
