@@ -12,16 +12,17 @@ builder.Services.AddSwaggerGen();
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Si es PostgreSQL de Render, convertir la URL
-if (connectionString?.StartsWith("postgres://") == true)
+// Convertir URL si es formato Heroku / Render (postgres:// o postgresql://)
+if (connectionString?.StartsWith("postgresql://") == true )
 {
-    connectionString = connectionString.Replace("postgres://", "");
+    connectionString = connectionString.Replace("postgresql://", "");
+
     var parts = connectionString.Split('@');
     var credentials = parts[0].Split(':');
     var serverPart = parts[1].Split('/');
     var server = serverPart[0];
     var database = serverPart[1];
-    
+
     connectionString = $"Host={server};Database={database};Username={credentials[0]};Password={credentials[1]};SSL Mode=Require;Trust Server Certificate=true";
 }
 
