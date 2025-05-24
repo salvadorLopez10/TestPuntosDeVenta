@@ -1,12 +1,24 @@
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import markerIconPng from 'leaflet/dist/images/marker-icon.png';
+import markerShadowPng from 'leaflet/dist/images/marker-shadow.png';
 import type { LatLngBoundsExpression } from 'leaflet';
 import type { PuntoVenta } from '../types/puntoVenta';
 import { useEffect, useState } from 'react';
 import { getPuntosVenta } from '../api/puntosVenta';
 
 const COLORS = ['#df2e20', '#006ba1', '#f97352', '#2a2a2a', '#374e79', '#2f4858'];
+
+const customMarker = new L.Icon({
+  iconUrl: markerIconPng,
+  shadowUrl: markerShadowPng,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const AjustarVistaMapa = ({ puntos }: { puntos: PuntoVenta[] }) => {
   const map = useMap();
@@ -91,7 +103,7 @@ const MapWithChart = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {puntos.map((p) => (
-            <Marker key={p.id} position={[p.latitud, p.longitud]}>
+            <Marker key={p.id} position={[p.latitud, p.longitud]} icon={customMarker}>
               <Popup>
                 <strong>{p.descripcion}</strong><br />
                 Venta: {p.venta.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}<br />
