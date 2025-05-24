@@ -6,24 +6,24 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar archivos de proyecto desde backend/
-COPY ["backend/PuntoVentaAPI/PuntoVentaAPI.csproj", "PuntoVentaAPI/"]
-COPY ["backend/PuntoVenta.Application/PuntoVenta.Application.csproj", "PuntoVenta.Application/"]
-COPY ["backend/PuntoVenta.Domain/PuntoVenta.Domain.csproj", "PuntoVenta.Domain/"]
-COPY ["backend/PuntoVenta.Infrastructure/PuntoVenta.Infrastructure.csproj", "PuntoVenta.Infrastructure/"]
+# Copiar solo los archivos .csproj primero para aprovechar el cache de Docker
+COPY backend/PuntoVentaAPI/PuntoVentaAPI.csproj PuntoVentaAPI/
+COPY backend/PuntoVenta.Application/PuntoVenta.Application.csproj PuntoVenta.Application/
+COPY backend/PuntoVenta.Domain/PuntoVenta.Domain.csproj PuntoVenta.Domain/
+COPY backend/PuntoVenta.Infrastructure/PuntoVenta.Infrastructure.csproj PuntoVenta.Infrastructure/
 
 # Restaurar dependencias
-RUN dotnet restore "PuntoVentaAPI/PuntoVentaAPI.csproj"
+RUN dotnet restore PuntoVentaAPI/PuntoVentaAPI.csproj
 
-# Copiar todo el código del backend
+# Copiar todo el código fuente del backend
 COPY backend/ .
-WORKDIR "/src/PuntoVentaAPI"
 
 # Build
-RUN dotnet build "PuntoVentaAPI.csproj" -c Release -o /app/build
+WORKDIR /src/PuntoVentaAPI
+RUN dotnet build PuntoVentaAPI.csproj -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PuntoVentaAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish PuntoVentaAPI.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
