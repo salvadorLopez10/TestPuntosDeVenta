@@ -6,17 +6,17 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar archivos de proyecto
-COPY ["PuntoVentaAPI/PuntoVentaAPI.csproj", "PuntoVentaAPI/"]
-COPY ["PuntoVenta.Application/PuntoVenta.Application.csproj", "PuntoVenta.Application/"]
-COPY ["PuntoVenta.Domain/PuntoVenta.Domain.csproj", "PuntoVenta.Domain/"]
-COPY ["PuntoVenta.Infrastructure/PuntoVenta.Infrastructure.csproj", "PuntoVenta.Infrastructure/"]
+# Copiar archivos de proyecto desde backend/
+COPY ["backend/PuntoVentaAPI/PuntoVentaAPI.csproj", "PuntoVentaAPI/"]
+COPY ["backend/PuntoVenta.Application/PuntoVenta.Application.csproj", "PuntoVenta.Application/"]
+COPY ["backend/PuntoVenta.Domain/PuntoVenta.Domain.csproj", "PuntoVenta.Domain/"]
+COPY ["backend/PuntoVenta.Infrastructure/PuntoVenta.Infrastructure.csproj", "PuntoVenta.Infrastructure/"]
 
 # Restaurar dependencias
 RUN dotnet restore "PuntoVentaAPI/PuntoVentaAPI.csproj"
 
-# Copiar todo el código
-COPY . .
+# Copiar todo el código del backend
+COPY backend/ .
 WORKDIR "/src/PuntoVentaAPI"
 
 # Build
